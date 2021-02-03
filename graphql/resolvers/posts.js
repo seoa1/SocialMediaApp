@@ -5,7 +5,7 @@ module.exports = {
     Query: {
         async getPosts() {
             try {
-                const posts = await Post.find();
+                const posts = await Post.find().sort({ createdAt: -1 });
                 return posts;
             }
             catch (err) {
@@ -30,6 +30,18 @@ module.exports = {
     Mutation: {
         async createPost(_, { body }, context) {
             const user = checkAuth(context);
+            console.log(user);
+
+            const newPost = new Post({ 
+                body,
+                user : user.id,
+                username: user.username,
+                createdAt: new Date().toISOString()
+            });
+
+            const post = await newPost.save();
+
+            return post;
         }
     }
 }
